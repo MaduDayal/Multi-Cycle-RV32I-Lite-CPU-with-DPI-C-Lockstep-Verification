@@ -10,7 +10,7 @@ The project emphasizes both RTL design and processor-level verification. Complet
 
 The verification environment also includes SystemVerilog Assertions, directed positive and negative tests, and retirement-level functional coverage.
 
-> **Scope:** This is an educational RV32I subset implementation. It is not a full RV32I implementation or a production-ready CPU.
+> **Scope:** This is an educational RV32I subset implementation. It is not a full RV32I implementation, a pipelined processor, or a production-ready CPU.
 
 ## Supported Instructions
 
@@ -61,7 +61,7 @@ Every completed legal instruction produces one retirement event containing:
 - Register-write indication, destination register, and value
 - Memory-write indication, address, and data
 
-Illegal and faulting instructions enter `HALT` without retiring or creating unintended architectural side effects.
+Legal instructions retire exactly once. Illegal and faulting instructions enter `HALT` without retiring or creating unintended architectural side effects.
 
 ## Verification Architecture
 
@@ -110,9 +110,13 @@ The SVA checker verifies major temporal and safety requirements, including:
 - `HALT` persistence and side-effect suppression
 - Known retirement information
 
+The default testbench directly instantiates the assertion modules defined in `sva/rv32i_assertions.sv`.
+
+An optional `sva/rv32i_assertion_bind.sv` file is included as an alternative assertion-integration example. It is not used by the default simulation flow. The direct-instantiation and bind approaches should not be enabled simultaneously because doing so would create duplicate assertion instances.
+
 ### Functional Coverage
 
-Retirement-level coverage includes:
+Retirement-level functional coverage includes:
 
 - Individual bins for all eight supported instructions
 - Lower and upper destination-register ranges
@@ -166,44 +170,40 @@ The final 29-retirement mixed instruction sequence was generated with AI assista
 
 ```text
 Multi-Cycle-RV32I-Lite-CPU/
-├── rtl/
-│   ├── rv32i_package.sv
-│   ├── rv32i_alu.sv
-│   ├── rv32i_imm_gen.sv
-│   ├── rv32i_regfile.sv
-│   ├── rv32i_decoder.sv
-│   ├── instruction_memory.sv
-│   ├── data_memory.sv
-│   └── rv32i_lite_core.sv
-├── tb/
-│   ├── riscvInf.sv
-│   ├── retire_transaction.sv
-│   ├── retire_monitor.sv
-│   ├── retire_scoreboard.sv
-│   ├── instruction_generator_package.sv
-│   ├── rv32i_program_builder.sv
-│   ├── rv32i_functional_coverage.sv
-│   └── rv32i_env.sv
-├── sva/
-│   └── rv32i_assertions.sv
 ├── dpi/
 │   ├── rv32i_dpi_package.sv
 │   └── rv32i_ref_model.cpp
+├── rtl/
+│   ├── data_memory.sv
+│   ├── instruction_memory.sv
+│   ├── rv32i_alu.sv
+│   ├── rv32i_decoder.sv
+│   ├── rv32i_imm_gen.sv
+│   ├── rv32i_lite_core.sv
+│   ├── rv32i_package.sv
+│   └── rv32i_regfile.sv
 ├── sim/
 │   ├── design.sv
-│   ├── testbench.sv
-│   └── run_vcs.sh
-├── results/
-│   └── mixed_test_result.txt
-├── .gitignore
+│   └── testbench.sv
+├── sva/
+│   ├── rv32i_assertion_bind.sv
+│   └── rv32i_assertions.sv
+├── tb/
+│   ├── instruction_generator_package.sv
+│   ├── retire_monitor.sv
+│   ├── retire_scoreboard.sv
+│   ├── retire_transaction.sv
+│   ├── riscvInf.sv
+│   ├── rv32i_env.sv
+│   ├── rv32i_functional_coverage.sv
+│   └── rv32i_program_builder.sv
 ├── LICENSE
 └── README.md
 ```
 
-
 ## Running with Synopsys VCS
 
-Run from the `sim/` directory after confirming that the relative include paths in `design.sv` match the repository structure.
+Run the following commands from the `sim/` directory after confirming that the relative include paths in `design.sv` match the repository structure:
 
 ```bash
 vcs -full64 -licqueue \
@@ -250,4 +250,4 @@ The following are intentionally outside the project scope:
 
 ## License
 
-This project is released under the MIT License. See [`LICENSE`](LICENSE) for details.
+This project is released under the MIT License. See LICENSE for details.
