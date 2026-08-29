@@ -200,7 +200,6 @@ Multi-Cycle-RV32I-Lite-CPU/
 └── README.md
 ```
 
-Adjust the tree above if your local folder or filenames differ.
 
 ## Running with Synopsys VCS
 
