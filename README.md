@@ -10,7 +10,7 @@ The project emphasizes both RTL design and processor-level verification. Complet
 
 The verification environment also includes SystemVerilog Assertions, directed positive and negative tests, and retirement-level functional coverage.
 
-> **Scope:** This is an educational RV32I subset implementation. It is not a full RV32I implementation, a pipelined processor, or a production-ready CPU.
+> **Scope:** This is an educational RV32I subset implementation. It is not a full RV32I implementation or a production-ready CPU.
 
 ## Supported Instructions
 
